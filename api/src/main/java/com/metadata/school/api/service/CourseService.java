@@ -16,13 +16,13 @@ import com.metadata.school.api.repository.CourseStudentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class CourseService {
 
     static final long MAX_STUDENTS_BY_COURSE = 50;

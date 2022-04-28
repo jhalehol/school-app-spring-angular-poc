@@ -24,7 +24,7 @@ public class CourseStudent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id_student_course")
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
