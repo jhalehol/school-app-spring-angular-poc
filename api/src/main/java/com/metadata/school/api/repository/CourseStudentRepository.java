@@ -18,4 +18,6 @@ public interface CourseStudentRepository extends CrudRepository<CourseStudent, L
     List<CourseStudent> getAllByCourse(Course course);
 
     List<CourseStudent> getAllByStudent(Student student);
+
+    boolean existsByStudent(Student student);
 }
