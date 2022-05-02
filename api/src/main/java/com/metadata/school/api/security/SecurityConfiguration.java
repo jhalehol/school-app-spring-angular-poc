@@ -1,6 +1,6 @@
 package com.metadata.school.api.security;
 
-import com.metadata.school.api.security.filter.AuthenticationFilter;
+import com.metadata.school.api.security.filter.SecurityFilter;
 import com.metadata.school.api.security.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +20,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final AuthEntryPoint entryPoint;
-    private final AuthenticationFilter authFilter;
+    private final SecurityFilter authFilter;
 
     public SecurityConfiguration(final UserService userService, final AuthEntryPoint entryPoint,
-            final AuthenticationFilter authFilter) {
+            final SecurityFilter authFilter) {
         this.userService = userService;
         this.entryPoint = entryPoint;
         this.authFilter = authFilter;

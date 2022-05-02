@@ -1,0 +1,48 @@
+<div class="filter-options">
+  <div class="filter">
+
+  </div>
+  <div class="add-button">
+    <button mat-flat-button (click)="addStudent()">Add Student</button>
+  </div>
+</div>
+<div class="container">
+  <table mat-table [dataSource]="studentsDataSource">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let element">{{element.id}}</td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{element.name}} {{element.surname}}</td>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let element">{{element.email}}</td>
+    </ng-container>
+    <ng-container matColumnDef="address">
+      <th mat-header-cell *matHeaderCellDef>Address</th>
+      <td mat-cell *matCellDef="let element">{{element.address}}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-button [matMenuTriggerFor]="menu">...</button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="editStudent(element.id)">Edit</button>
+          <button mat-menu-item (click)="openDeleteConfirmation(element)">Delete</button>
+        </mat-menu>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="listColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: listColumns;"></tr>
+  </table>
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 30]"
+    [showFirstLastButtons]="true"
+    (page)="pageEvent = loadStudents($event)">
+  </mat-paginator>
+
+</div>

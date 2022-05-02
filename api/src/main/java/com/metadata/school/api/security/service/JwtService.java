@@ -36,7 +36,7 @@ public class JwtService {
 
     private static final int KEYS_BYTES = 2048;
     public static final String JWT_TYPE = "JWT";
-    private static final String JWT_ISSUER = "Financial YellowPepper";
+    private static final String JWT_ISSUER = "Metadata";
     private static final Integer JWT_NOT_BEFORE_MINS = 2;
     private static final String JWT_SUBJECT = "financial-token";
     private static final String JWT_USER_CLAIM = "user-id";

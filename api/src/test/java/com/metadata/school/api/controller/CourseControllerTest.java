@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,6 +33,8 @@ public class CourseControllerTest {
 
     private static final Long COURSE_ID = 777L;
     private static final Long STUDENT_ID = 999L;
+    private static final int SELECTED_PAGE = 1;
+    private static final int PAGE_SIZE = 10;
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -151,15 +154,14 @@ public class CourseControllerTest {
     @Test
     public void givenPaginationWhenGetCoursesThenReturnOk() {
         // Arrange
-        final PaginationDto paginationDto = new PaginationDto();
         final CoursesPageDto pageDto = new CoursesPageDto();
-        when(courseService.getCourses(paginationDto)).thenReturn(pageDto);
+        when(courseService.getCourses(any(PaginationDto.class))).thenReturn(pageDto);
 
         // Act
-        final ResponseEntity<?> response = controller.getCourses(paginationDto);
+        final ResponseEntity<?> response = controller.getCourses(SELECTED_PAGE, PAGE_SIZE);
 
         // Assert
-        verify(courseService).getCourses(paginationDto);
+        verify(courseService).getCourses(any(PaginationDto.class));
         errorCollector.checkThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         errorCollector.checkThat(response.getBody(), equalTo(pageDto));
     }

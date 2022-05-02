@@ -18,16 +18,17 @@ public class StudentDto {
     private String idNumber;
     private String name;
     private String surname;
-    private Long birthDate;
+    private String email;
     private String address;
 
     public static StudentDto convertToDto(final Student student) {
         return StudentDto.builder()
                 .id(student.getId())
+                .idNumber(student.getIdNumber())
                 .name(student.getName())
                 .surname(student.getSurname())
                 .address(student.getAddress())
-                .birthDate(student.getBirthDate())
+                .email(student.getEmail())
                 .build();
     }
 

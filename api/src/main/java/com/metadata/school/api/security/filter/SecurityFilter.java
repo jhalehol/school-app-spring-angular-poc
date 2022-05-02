@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class AuthenticationFilter extends OncePerRequestFilter {
+public class SecurityFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
@@ -32,7 +32,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public AuthenticationFilter(JwtService jwtService) {
+    public SecurityFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 

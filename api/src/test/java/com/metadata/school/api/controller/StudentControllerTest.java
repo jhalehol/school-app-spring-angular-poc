@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.when;
 public class StudentControllerTest {
 
     private static final Long STUDENT_ID = 777L;
+    private static final int SELECTED_PAGE = 1;
+    private static final int PAGE_SIZE = 10;
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -75,6 +78,8 @@ public class StudentControllerTest {
     public void givenStudentDtoWhenAddThenReturnOk() throws Exception {
         // Arrange
         final StudentDto studentDto = mock(StudentDto.class);
+        final StudentDto studentSaved = mock(StudentDto.class);
+        when(studentService.addStudent(studentDto)).thenReturn(studentSaved);
 
         // Act
         final ResponseEntity<?> response = controller.addStudent(studentDto);
@@ -82,6 +87,7 @@ public class StudentControllerTest {
         // Assert
         verify(studentService).addStudent(studentDto);
         errorCollector.checkThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        errorCollector.checkThat(response.getBody(), equalTo(studentSaved));
     }
 
     @Test
@@ -153,15 +159,14 @@ public class StudentControllerTest {
     @Test
     public void givenPaginationWhenGetStudentsThenReturnOk() {
         // Arrange
-        final PaginationDto paginationDto = new PaginationDto();
         final StudentsPageDto studentsPageDto = new StudentsPageDto();
-        when(studentService.getStudents(paginationDto)).thenReturn(studentsPageDto);
+        when(studentService.getStudents(any(PaginationDto.class))).thenReturn(studentsPageDto);
 
         // Act
-        final ResponseEntity<?> response = controller.getStudents(paginationDto);
+        final ResponseEntity<?> response = controller.getStudents(SELECTED_PAGE, PAGE_SIZE);
 
         // Assert
-        verify(studentService).getStudents(paginationDto);
+        verify(studentService).getStudents(any(PaginationDto.class));
         errorCollector.checkThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         errorCollector.checkThat(response.getBody(), equalTo(studentsPageDto));
     }

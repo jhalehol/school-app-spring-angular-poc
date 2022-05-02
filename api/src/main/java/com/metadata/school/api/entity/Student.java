@@ -35,8 +35,8 @@ public class Student {
     @Column(name = "surname")
     private String surname;
 
-    @Column(name = "birth_date")
-    private Long birthDate;
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "address")
     private String address;

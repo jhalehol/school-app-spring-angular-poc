@@ -10,6 +10,7 @@ import com.metadata.school.api.exception.NotFoundException;
 import com.metadata.school.api.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController()
-@RequestMapping("api/courses")
+@RequestMapping("/api/courses")
 public class CourseController {
 
     private final CourseService courseService;
@@ -50,7 +51,7 @@ public class CourseController {
         }
     }
 
-    @PutMapping(value = "/update/{id}", produces = "application/json")
+    @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseDto course) {
         try {
             courseService.updateCourse(id, course);
@@ -60,7 +61,7 @@ public class CourseController {
         }
     }
 
-    @PostMapping(value = "/delete/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         try {
             courseService.deleteCourse(id);
@@ -70,8 +71,12 @@ public class CourseController {
         }
     }
 
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<?> getCourses(@RequestBody PaginationDto pagination) {
+    @GetMapping(value = "/{selectedPage}/{pageSize}", produces = "application/json")
+    public ResponseEntity<?> getCourses(@PathVariable Integer selectedPage, @PathVariable Integer pageSize) {
+        final PaginationDto pagination = PaginationDto.builder()
+                .pageNumber(selectedPage)
+                .pageSize(pageSize)
+                .build();
         final CoursesPageDto pageDto = courseService.getCourses(pagination);
         return ResponseEntity.ok(pageDto);
     }

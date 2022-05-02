@@ -12,4 +12,5 @@ public class ApplicationConfiguration {
     private String oauthPrivateKeyPath;
     private String oauthPublicKeyPath;
     private Long oauthTokenExpirationTimeMins;
+    private String uiOriginUrl;
 }

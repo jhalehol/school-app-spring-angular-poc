@@ -4,12 +4,14 @@ import com.metadata.school.api.dto.CourseStudentDto;
 import com.metadata.school.api.dto.PaginationDto;
 import com.metadata.school.api.dto.StudentDto;
 import com.metadata.school.api.dto.StudentsPageDto;
+import com.metadata.school.api.exception.ForbiddenException;
 import com.metadata.school.api.exception.InvalidParametersException;
 import com.metadata.school.api.exception.NotFoundException;
 import com.metadata.school.api.service.CourseService;
 import com.metadata.school.api.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController()
-@RequestMapping("api/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;
@@ -42,38 +44,44 @@ public class StudentController {
         }
     }
 
-    @PostMapping(value = "/add", produces = "application/json")
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> addStudent(@RequestBody StudentDto student) {
         try {
-            studentService.addStudent(student);
-            return ResponseEntity.ok().build();
+            final StudentDto studentDto = studentService.addStudent(student);
+            return ResponseEntity.ok(studentDto);
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    @PutMapping(value = "/update/{id}", produces = "application/json")
+    @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody StudentDto student) {
         try {
-            studentService.updateStudent(id, student);
-            return ResponseEntity.ok().build();
+            final StudentDto studentDto = studentService.updateStudent(id, student);
+            return ResponseEntity.ok(studentDto);
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    @PostMapping(value = "/delete/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         try {
             studentService.deleteStudent(id);
             return ResponseEntity.ok().build();
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<?> getStudents(@RequestBody PaginationDto pagination) {
+    @GetMapping(value = "/{selectedPage}/{pageSize}", produces = "application/json")
+    public ResponseEntity<?> getStudents(@PathVariable Integer selectedPage, @PathVariable Integer pageSize) {
+        final PaginationDto pagination = PaginationDto.builder()
+                .pageNumber(selectedPage)
+                .pageSize(pageSize)
+                .build();
         final StudentsPageDto pageDto = studentService.getStudents(pagination);
         return ResponseEntity.ok(pageDto);
     }

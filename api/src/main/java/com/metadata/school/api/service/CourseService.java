@@ -161,12 +161,10 @@ public class CourseService {
 
     private List<CourseStudentDto> convertCourseStudents(List<CourseStudent> courseStudents) {
         return courseStudents.stream()
-                .map(courseStudent -> {
-                    return CourseStudentDto.builder()
-                            .course(CourseDto.convertToDto(courseStudent.getCourse()))
-                            .student(StudentDto.convertToDto(courseStudent.getStudent()))
-                            .build();
-                })
+                .map(courseStudent -> CourseStudentDto.builder()
+                        .course(CourseDto.convertToDto(courseStudent.getCourse()))
+                        .student(StudentDto.convertToDto(courseStudent.getStudent()))
+                        .build())
                 .collect(Collectors.toList());
     }
 

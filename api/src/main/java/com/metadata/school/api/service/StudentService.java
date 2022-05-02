@@ -4,8 +4,10 @@ import com.metadata.school.api.dto.PaginationDto;
 import com.metadata.school.api.dto.StudentDto;
 import com.metadata.school.api.dto.StudentsPageDto;
 import com.metadata.school.api.entity.Student;
+import com.metadata.school.api.exception.ForbiddenException;
 import com.metadata.school.api.exception.InvalidParametersException;
 import com.metadata.school.api.exception.NotFoundException;
+import com.metadata.school.api.repository.CourseStudentRepository;
 import com.metadata.school.api.repository.StudentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseStudentRepository courseStudentRepository;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, CourseStudentRepository courseStudentRepository) {
         this.studentRepository = studentRepository;
+        this.courseStudentRepository = courseStudentRepository;
     }
 
     /**
@@ -39,17 +43,18 @@ public class StudentService {
      * @param studentDto Object with student details
      * @throws InvalidParametersException
      */
-    public void addStudent(final StudentDto studentDto) throws InvalidParametersException {
+    public StudentDto addStudent(final StudentDto studentDto) throws InvalidParametersException {
         validateStudentDto(studentDto);
 
         final Student student = Student.builder()
                 .name(studentDto.getName())
                 .surname(studentDto.getSurname())
                 .address(studentDto.getAddress())
-                .birthDate(studentDto.getBirthDate())
+                .email(studentDto.getEmail())
                 .idNumber(studentDto.getIdNumber())
                 .build();
-        studentRepository.save(student);
+        final Student studentSaved = studentRepository.save(student);
+        return StudentDto.convertToDto(studentSaved);
     }
 
     /**
@@ -57,7 +62,7 @@ public class StudentService {
      * @param studentDto Object with student details
      * @throws InvalidParametersException
      */
-    public void updateStudent(final Long studentId, final StudentDto studentDto)
+    public StudentDto updateStudent(final Long studentId, final StudentDto studentDto)
             throws InvalidParametersException {
         try {
             final Student student = findStudent(studentId);
@@ -66,9 +71,10 @@ public class StudentService {
             student.setName(studentDto.getName());
             student.setSurname(studentDto.getSurname());
             student.setAddress(studentDto.getAddress());
-            student.setBirthDate(studentDto.getBirthDate());
+            student.setEmail(studentDto.getEmail());
             student.setIdNumber(studentDto.getIdNumber());
             studentRepository.save(student);
+            return StudentDto.convertToDto(student);
         } catch (NotFoundException e) {
             throw new InvalidParametersException(String.format("Unable to update student data, %s", e.getMessage()));
         }
@@ -79,9 +85,14 @@ public class StudentService {
      * @param studentId Student identifier
      * @throws InvalidParametersException
      */
-    public void deleteStudent(final Long studentId) throws InvalidParametersException {
+    public void deleteStudent(final Long studentId) throws InvalidParametersException, ForbiddenException {
         try {
             final Student student = findStudent(studentId);
+            final boolean courseAssociated = courseStudentRepository.existsByStudent(student);
+            if (courseAssociated) {
+                throw new ForbiddenException("Student has courses associated!");
+            }
+
             studentRepository.delete(student);
         } catch (NotFoundException e) {
             throw new InvalidParametersException(String.format("Unable to student, %s", e.getMessage()));
@@ -95,7 +106,7 @@ public class StudentService {
      */
     public StudentsPageDto getStudents(final PaginationDto paginationData) {
         final Pageable pageable = PageRequest.of(paginationData.getPageNumber(), paginationData.getPageSize());
-        final Page<Student> studentsPage = studentRepository.findAll(pageable);
+        final Page<Student> studentsPage = studentRepository.findAllByOrderById(pageable);
         final List<StudentDto> students = studentsPage.toList().stream()
                 .map(StudentDto::convertToDto)
                 .collect(Collectors.toList());

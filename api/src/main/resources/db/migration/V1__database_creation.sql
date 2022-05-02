@@ -21,7 +21,7 @@ CREATE TABLE sch_students (
                              id_number varchar(50) NOT NULL,
                              name varchar(100) NOT NULL,
                              surname varchar(100),
-                             birth_date bigint,
+                             email varchar(100),
                              address varchar(200)
 )
 ;
