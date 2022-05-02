@@ -4,8 +4,10 @@ import com.metadata.school.api.dto.PaginationDto;
 import com.metadata.school.api.dto.StudentDto;
 import com.metadata.school.api.dto.StudentsPageDto;
 import com.metadata.school.api.entity.Student;
+import com.metadata.school.api.exception.ForbiddenException;
 import com.metadata.school.api.exception.InvalidParametersException;
 import com.metadata.school.api.exception.NotFoundException;
+import com.metadata.school.api.repository.CourseStudentRepository;
 import com.metadata.school.api.repository.StudentRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +54,9 @@ public class StudentServiceTest {
     @Mock
     private Student studentMock;
 
+    @Mock
+    private CourseStudentRepository courseStudentRepository;
+
     @InjectMocks
     private StudentService studentService;
 
@@ -91,12 +96,20 @@ public class StudentServiceTest {
     public void givenValidStudentDataWhenAddStudentThenShouldBeSuccess() throws Exception {
         // Arrange
         final StudentDto studentDto = buildStudentDto();
+        final Student studentSaved = new Student();
+        studentSaved.setId(STUDENT_ID);
+        studentSaved.setName(STUDENT_NAME);
+        studentSaved.setIdNumber(STUDENT_ID_NUMBER);
+        when(studentRepository.save(any(Student.class))).thenReturn(studentSaved);
 
         // Act
-        studentService.addStudent(studentDto);
+        final StudentDto result = studentService.addStudent(studentDto);
 
         // Assert
         verify(studentRepository).save(any(Student.class));
+        errorCollector.checkThat(result.getId(), equalTo(STUDENT_ID));
+        errorCollector.checkThat(result.getName(), equalTo(STUDENT_NAME));
+        errorCollector.checkThat(result.getIdNumber(), equalTo(STUDENT_ID_NUMBER));
     }
 
     @Test
@@ -111,14 +124,16 @@ public class StudentServiceTest {
     @Test
     public void givenValidStudentDataWhenUpdateStudentThenShouldBeSuccess() throws Exception {
         // Arrange
+        when(studentMock.getIdNumber()).thenReturn(STUDENT_ID_NUMBER);
         when(studentRepository.findById(STUDENT_ID)).thenReturn(Optional.of(studentMock));
         final StudentDto studentDto = buildStudentDto();
 
         // Act
-        studentService.updateStudent(STUDENT_ID, studentDto);
+        final StudentDto result = studentService.updateStudent(STUDENT_ID, studentDto);
 
         // Assert
         verify(studentRepository).save(studentMock);
+        errorCollector.checkThat(result.getIdNumber(), equalTo(STUDENT_ID_NUMBER));
     }
 
     @Test
@@ -131,6 +146,19 @@ public class StudentServiceTest {
 
         // Assert
         verify(studentRepository).delete(studentMock);
+    }
+
+    @Test
+    public void givenValidStudentIdWhenAssociatedToCourseDeleteStudentThenShould() throws Exception {
+        // Arrange
+        when(studentRepository.findById(STUDENT_ID)).thenReturn(Optional.of(studentMock));
+        when(courseStudentRepository.existsByStudent(studentMock)).thenReturn(true);
+
+        // Act && Assert
+        expectedException.expect(ForbiddenException.class);
+        expectedException.expectMessage("Student has courses associated!");
+
+        studentService.deleteStudent(STUDENT_ID);
     }
 
     @Test
@@ -147,14 +175,14 @@ public class StudentServiceTest {
         when(studentPage.getTotalElements()).thenReturn(TOTAL_ELEMENTS);
         when(studentPage.getTotalPages()).thenReturn(TOTAL_PAGES);
         when(studentPage.toList()).thenReturn(studentList);
-        when(studentRepository.findAll(any(Pageable.class))).thenReturn(studentPage);
+        when(studentRepository.findAllByOrderById(any(Pageable.class))).thenReturn(studentPage);
         final PaginationDto paginationDto = new PaginationDto(PAGE_NUMBER, TOTAL_PAGE_SIZE);
 
         // Act
         final StudentsPageDto studentsPageDto = studentService.getStudents(paginationDto);
 
         // Assert
-        verify(studentRepository).findAll(any(Pageable.class));
+        verify(studentRepository).findAllByOrderById(any(Pageable.class));
         errorCollector.checkThat(studentsPageDto.getTotalPages(), equalTo(TOTAL_PAGES));
         errorCollector.checkThat(studentsPageDto.getTotalElements(), equalTo(TOTAL_ELEMENTS));
         errorCollector.checkThat(studentsPageDto.getStudents().size(), equalTo(studentList.size()));
