@@ -104,18 +104,21 @@ public class StudentService {
      * @param paginationData Data to paginate the results
      * @return
      */
+    public StudentsPageDto getAllStudentsWithoutCourse(final PaginationDto paginationData) {
+        final Pageable pageable = PageRequest.of(paginationData.getPageNumber(), paginationData.getPageSize());
+        final Page<Student> studentsPage = studentRepository.findAllWithoutCourses(pageable);
+        return StudentsPageDto.convertToDto(studentsPage);
+    }
+
+    /**
+     * Gets the list of students according to the given pagination data
+     * @param paginationData Data to paginate the results
+     * @return
+     */
     public StudentsPageDto getStudents(final PaginationDto paginationData) {
         final Pageable pageable = PageRequest.of(paginationData.getPageNumber(), paginationData.getPageSize());
         final Page<Student> studentsPage = studentRepository.findAllByOrderById(pageable);
-        final List<StudentDto> students = studentsPage.toList().stream()
-                .map(StudentDto::convertToDto)
-                .collect(Collectors.toList());
-
-        return StudentsPageDto.builder()
-                .totalElements(studentsPage.getTotalElements())
-                .totalPages(studentsPage.getTotalPages())
-                .students(students)
-                .build();
+        return StudentsPageDto.convertToDto(studentsPage);
     }
 
     Student findStudent(final Long studentId) throws NotFoundException {

@@ -23,14 +23,14 @@ export class ApiResponseInterceptor {
     if (error && error.status) {
       this.authService.handleUnauthorized(error);
       response.hasError = true;
+      response.errorMessage = 'Something failed during API call';
       if (error) {
         response.errorCode = error.status;
         response.errorMessage = error.statusText;
-        if (error.error) {
+        const errorInfo = error.error;
+        if (errorInfo && typeof errorInfo !== 'object') {
           response.errorMessage = error.error;
         }
-      } else {
-        response.errorMessage = 'Something failed during API call';
       }
     }
 

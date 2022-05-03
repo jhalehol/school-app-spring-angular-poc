@@ -1,15 +1,15 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ErrorFormMatcher} from '../../validators/error-form-matcher';
-import {Router} from '@angular/router';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSnackBar} from '@angular/material';
+import {Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import { ErrorFormMatcher } from '../../validators/error-form-matcher';
+import { Router } from '@angular/router';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
-import {Student} from '../../entities/student';
-import {AppConstants} from '../../common/app-constants';
-import {StudentsService} from '../../services/students.service';
-import {ApiResponse} from '../../entities/api-response';
-import {EntityCrudResult} from '../../entities/entity-crud-result';
-import {MessagesService} from '../../services/messages-service';
+import { Student } from '../../entities/student';
+import { AppConstants } from '../../common/app-constants';
+import { StudentsService } from '../../services/students.service';
+import { ApiResponse } from '../../entities/api-response';
+import { EntityCrudResult } from '../../entities/entity-crud-result';
+import { MessagesService } from '../../services/messages-service';
 
 @Component({
   selector: 'app-edit-student',
@@ -65,9 +65,9 @@ export class EditStudentComponent implements OnInit {
 
   saveStudent() {
     if (this.currentIdStudent) {
-      this.updateStudent()
+      this.updateStudent();
     } else {
-      this.addStudent()
+      this.addStudent();
     }
   }
 
@@ -116,7 +116,7 @@ export class EditStudentComponent implements OnInit {
             surname: student.surname,
             email: student.email,
             address: student.address
-          })
+          });
         }
     });
   }

@@ -14,7 +14,6 @@ import com.metadata.school.api.exception.NotFoundException;
 import com.metadata.school.api.repository.CourseRepository;
 import com.metadata.school.api.repository.CourseStudentRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -52,14 +51,15 @@ public class CourseService {
      * @param courseDto Dto that contains the course data
      * @throws InvalidParametersException
      */
-    public void addCourse(final CourseDto courseDto) throws InvalidParametersException {
+    public CourseDto addCourse(final CourseDto courseDto) throws InvalidParametersException {
         validateCourseDto(courseDto);
         final Course course = Course.builder()
-                .courseName(courseDto.getCourseName())
+                .courseName(courseDto.getName())
                 .teacherName(courseDto.getTeacherName())
                 .credits(courseDto.getCredits())
                 .build();
-        courseRepository.save(course);
+        final Course courseAdded = courseRepository.save(course);
+        return CourseDto.convertToDto(courseAdded);
     }
 
     /**
@@ -68,14 +68,14 @@ public class CourseService {
      * @param courseDto Dto that contains the course data
      * @throws InvalidParametersException
      */
-    public void updateCourse(final Long courseId, final CourseDto courseDto) throws InvalidParametersException {
+    public CourseDto updateCourse(final Long courseId, final CourseDto courseDto) throws InvalidParametersException {
         try {
             validateCourseDto(courseDto);
             final Course course = findCourse(courseId);
-            course.setCourseName(courseDto.getCourseName());
+            course.setCourseName(courseDto.getName());
             course.setTeacherName(courseDto.getTeacherName());
             course.setCredits(courseDto.getCredits());
-            courseRepository.save(course);
+            return CourseDto.convertToDto(courseRepository.save(course));
         } catch (NotFoundException e) {
             throw new InvalidParametersException(String
                     .format("Unable to update the given course, %s", e.getMessage()));
@@ -86,9 +86,14 @@ public class CourseService {
      * Deletes the given course from the repository
      * @param courseId Course identifier
      */
-    public void deleteCourse(final Long courseId) throws InvalidParametersException {
+    public void deleteCourse(final Long courseId) throws InvalidParametersException, ForbiddenException {
         try {
             final Course course = findCourse(courseId);
+            final boolean studentAssociated = courseStudentRepository.existsByCourse(course);
+            if (studentAssociated) {
+                throw new ForbiddenException("Course has students associated");
+            }
+
             courseRepository.delete(course);
         } catch (NotFoundException e) {
             throw new InvalidParametersException(String.format("Unable to delete the given course, %s",
@@ -104,7 +109,7 @@ public class CourseService {
      */
     public List<CourseStudentDto> getCourseStudents(final Long courseId) throws NotFoundException {
         final Course course = findCourse(courseId);
-        List<CourseStudent> courseStudents = courseStudentRepository.getAllByCourse(course);
+        final List<CourseStudent> courseStudents = courseStudentRepository.getAllByCourse(course);
         return convertCourseStudents(courseStudents);
     }
 
@@ -141,22 +146,24 @@ public class CourseService {
     }
 
     /**
+     * Get all courses without students assigned
+     * @return List of courses
+     */
+    public CoursesPageDto getAllCoursesWithoutStudents(final PaginationDto paginationData) {
+        final Pageable pageable = paginationData.toPageable();
+        final Page<Course> coursesPage = courseRepository.findAllWithoutStudents(pageable);
+        return CoursesPageDto.convertToDto(coursesPage);
+    }
+
+    /**
      * Get all courses list according to the given pagination
      * @param paginationData Pagination data used to retrieve the results
      * @return
      */
     public CoursesPageDto getCourses(final PaginationDto paginationData) {
-        final Pageable pageable = PageRequest.of(paginationData.getPageNumber(), paginationData.getPageSize());
-        final Page<Course> coursesPage = courseRepository.findAll(pageable);
-        final List<CourseDto> courses = coursesPage.toList().stream()
-                .map(CourseDto::convertToDto)
-                .collect(Collectors.toList());
-
-        return CoursesPageDto.builder()
-                .totalElements(coursesPage.getTotalElements())
-                .totalPages(coursesPage.getTotalPages())
-                .courses(courses)
-                .build();
+        final Pageable pageable = paginationData.toPageable();
+        final Page<Course> coursesPage = courseRepository.findAllByOrderById(pageable);
+        return CoursesPageDto.convertToDto(coursesPage);
     }
 
     private List<CourseStudentDto> convertCourseStudents(List<CourseStudent> courseStudents) {

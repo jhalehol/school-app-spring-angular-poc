@@ -172,6 +172,21 @@ public class StudentControllerTest {
     }
 
     @Test
+    public void givenPaginationWhenGetStudentsWithoutCoursesThenReturnOk() {
+        // Arrange
+        final StudentsPageDto studentsPageDto = new StudentsPageDto();
+        when(studentService.getAllStudentsWithoutCourse(any(PaginationDto.class))).thenReturn(studentsPageDto);
+
+        // Act
+        final ResponseEntity<?> response = controller.getStudentsWithoutCourse(SELECTED_PAGE, PAGE_SIZE);
+
+        // Assert
+        verify(studentService).getAllStudentsWithoutCourse(any(PaginationDto.class));
+        errorCollector.checkThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        errorCollector.checkThat(response.getBody(), equalTo(studentsPageDto));
+    }
+
+    @Test
     public void givenStudentIdWhenGetStudentCoursesThenReturnOk() throws Exception {
         // Arrange
         final List<CourseStudentDto> studentCourses = Collections.emptyList();

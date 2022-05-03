@@ -86,6 +86,16 @@ public class StudentController {
         return ResponseEntity.ok(pageDto);
     }
 
+    @GetMapping(value = "/empty/{selectedPage}/{pageSize}", produces = "application/json")
+    public ResponseEntity<?> getStudentsWithoutCourse(@PathVariable Integer selectedPage, @PathVariable Integer pageSize) {
+        final PaginationDto pagination = PaginationDto.builder()
+                .pageNumber(selectedPage)
+                .pageSize(pageSize)
+                .build();
+        final StudentsPageDto pageDto = studentService.getAllStudentsWithoutCourse(pagination);
+        return ResponseEntity.ok(pageDto);
+    }
+
     @GetMapping(value = "/{id}/courses", produces = "application/json")
     public ResponseEntity<?> getStudentCourses(@PathVariable Long id) {
         try {

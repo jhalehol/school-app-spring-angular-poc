@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Setter
 @Builder
@@ -24,5 +26,9 @@ public class PaginationDto {
 
     public Integer getPageNumber() {
         return pageNumber == null ? DEFAULT_PAGE_NUMBER : pageNumber;
+    }
+
+    public Pageable toPageable() {
+        return PageRequest.of(pageNumber, pageSize);
     }
 }

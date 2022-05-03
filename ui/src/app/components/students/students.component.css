@@ -3,20 +3,25 @@ table {
   text-align: left;
 }
 .container {
-  display: flex;
   flex-direction: column;
 }
 
 .filter-options {
   width: 100%;
   padding-top: 10px;
+  float: left;
 }
 
 .filter {
   text-align: left;
+  float: left;
+  padding-top: 20px;
+  padding-left: 10px;
 }
 
 .add-button {
   text-align: right;
+  padding-top: 20px;
   padding-right: 30px;
+  float: right;
 }

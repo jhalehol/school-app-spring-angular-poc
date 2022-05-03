@@ -10,6 +10,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatMenuModule, MatPaginatorModule, MatTableModule } from '@angular/material';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -37,6 +38,7 @@ import { ConfirmActionComponent } from './components/confirm-action/confirm-acti
   ],
   entryComponents: [
     EditStudentComponent,
+    EditCourseComponent,
     ConfirmActionComponent
   ],
   imports: [
@@ -56,7 +58,8 @@ import { ConfirmActionComponent } from './components/confirm-action/confirm-acti
     MatSnackBarModule,
     FormsModule,
     MatDialogModule,
-    MatMenuModule
+    MatMenuModule,
+    MatCheckboxModule
   ],
   providers: [
     {

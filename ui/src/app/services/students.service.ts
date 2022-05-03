@@ -10,10 +10,8 @@ import { PaginationData } from '../entities/pagination-data';
 import { Student } from '../entities/student';
 import { ApiResponse } from '../entities/api-response';
 import { ApiResponseInterceptor } from '../interceptors/api-response-interceptor';
+import { AppConstants } from '../common/app-constants';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable({
   providedIn: 'root'
@@ -36,9 +34,21 @@ export class StudentsService {
       );
   }
 
+  public getStudentsWithoutCourses(pagination: PaginationData): Observable<ApiResponse> {
+    return this.httpClient
+      .get<StudentsPage>(`${AppPaths.API.STUDENTS_URL}/empty/${pagination.pageNumber}/${pagination.pageSize}`)
+      .pipe(
+        map((data: StudentsPage) => {
+          return this.responseInterceptor.processApiResponse(data);
+        }), catchError(error => {
+          return of(this.responseInterceptor.processApiError(error));
+        })
+      );
+  }
+
   public getStudent(id: string): Observable<ApiResponse> {
     return this.httpClient
-      .get<StudentsPage>(`${AppPaths.API.STUDENTS_URL}/${id}`)
+      .get<Student>(`${AppPaths.API.STUDENTS_URL}/${id}`)
       .pipe(
         map((data: Student) => {
           return this.responseInterceptor.processApiResponse(data);
@@ -49,7 +59,7 @@ export class StudentsService {
   }
 
   public addStudent(student: Student): Observable<ApiResponse> {
-    return this.httpClient.post(AppPaths.API.STUDENTS_URL, student, httpOptions)
+    return this.httpClient.post(AppPaths.API.STUDENTS_URL, student, AppConstants.COMMON_HTTP_OPTIONS)
       .pipe(
         map((data: Student) => {
           return this.responseInterceptor.processApiResponse(data);
@@ -59,13 +69,13 @@ export class StudentsService {
   }
 
   public updateStudent(id: String, student: Student): Observable<ApiResponse> {
-    return this.httpClient.put(`${AppPaths.API.STUDENTS_URL}/${id}`, student, httpOptions)
+    return this.httpClient.put(`${AppPaths.API.STUDENTS_URL}/${id}`, student, AppConstants.COMMON_HTTP_OPTIONS)
       .pipe(
         map((data: Student) => {
           return this.responseInterceptor.processApiResponse(data);
         }), catchError(error => {
           return of(this.responseInterceptor.processApiError(error));
-        }))
+        }));
   }
 
   public deleteStudent(id: String): Observable<ApiResponse> {
@@ -75,6 +85,6 @@ export class StudentsService {
           return this.responseInterceptor.processApiResponse(data);
         }), catchError(error => {
           return of(this.responseInterceptor.processApiError(error));
-        }))
+        }));
   }
 }

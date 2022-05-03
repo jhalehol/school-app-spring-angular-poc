@@ -188,6 +188,33 @@ public class StudentServiceTest {
         errorCollector.checkThat(studentsPageDto.getStudents().size(), equalTo(studentList.size()));
     }
 
+    @Test
+    public void givenPaginationWhenGetStudentsWithoutCoursesThenReturnListOfStudents() {
+        // Arrange
+        final List<Student> studentList = Collections.singletonList(
+                Student.builder()
+                        .id(STUDENT_ID)
+                        .name(STUDENT_NAME)
+                        .idNumber(STUDENT_ID_NUMBER)
+                        .build()
+        );
+        final Page studentPage = mock(Page.class);
+        when(studentPage.getTotalElements()).thenReturn(TOTAL_ELEMENTS);
+        when(studentPage.getTotalPages()).thenReturn(TOTAL_PAGES);
+        when(studentPage.toList()).thenReturn(studentList);
+        when(studentRepository.findAllWithoutCourses(any(Pageable.class))).thenReturn(studentPage);
+        final PaginationDto paginationDto = new PaginationDto(PAGE_NUMBER, TOTAL_PAGE_SIZE);
+
+        // Act
+        final StudentsPageDto studentsPageDto = studentService.getAllStudentsWithoutCourse(paginationDto);
+
+        // Assert
+        verify(studentRepository).findAllWithoutCourses(any(Pageable.class));
+        errorCollector.checkThat(studentsPageDto.getTotalPages(), equalTo(TOTAL_PAGES));
+        errorCollector.checkThat(studentsPageDto.getTotalElements(), equalTo(TOTAL_ELEMENTS));
+        errorCollector.checkThat(studentsPageDto.getStudents().size(), equalTo(studentList.size()));
+    }
+
     public StudentDto buildStudentDto() {
         return StudentDto.builder()
                 .id(STUDENT_ID)

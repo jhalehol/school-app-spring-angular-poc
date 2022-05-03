@@ -1,7 +1,7 @@
 export class Course {
 
-  id: number;
-  courseName: string;
+  id: string;
+  name: string;
   teacherName: string;
   credits: number;
 }

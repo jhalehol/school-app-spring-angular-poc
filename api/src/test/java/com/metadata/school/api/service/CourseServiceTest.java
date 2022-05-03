@@ -86,13 +86,14 @@ public class CourseServiceTest {
 
         // Assert
         verify(courseRepository).findById(COURSE_ID);
-        errorCollector.checkThat(courseDto.getCourseName(), equalTo(COURSE_NAME));
+        errorCollector.checkThat(courseDto.getName(), equalTo(COURSE_NAME));
     }
 
     @Test
     public void givenValidCourseDataWhenAddCourseThenShouldBeSuccess() throws Exception {
         // Arrange
         final CourseDto courseData = buildCourseDto();
+        when(courseRepository.save(any(Course.class))).thenReturn(courseMock);
 
         // Act
         courseService.addCourse(courseData);
@@ -115,6 +116,7 @@ public class CourseServiceTest {
         // Arrange
         final CourseDto courseData = buildCourseDto();
         when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
+        when(courseRepository.save(courseMock)).thenReturn(courseMock);
 
         // Act
         courseService.updateCourse(COURSE_ID, courseData);
@@ -158,6 +160,19 @@ public class CourseServiceTest {
         expectedException.expect(InvalidParametersException.class);
         expectedException.expectMessage(String.format("Unable to delete the given course, Course %s not found",
                 COURSE_ID));
+
+        courseService.deleteCourse(COURSE_ID);
+    }
+
+    @Test
+    public void givenValidCourseIdWhenDeleteCourseWithStudentsThenShouldFail() throws Exception {
+        // Arrange
+        when(courseStudentRepository.existsByCourse(courseMock)).thenReturn(true);
+        when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
+
+        // Act && Assert
+        expectedException.expect(ForbiddenException.class);
+        expectedException.expectMessage("Course has students associated");
 
         courseService.deleteCourse(COURSE_ID);
     }
@@ -250,14 +265,35 @@ public class CourseServiceTest {
         when(coursesPage.getTotalElements()).thenReturn(TOTAL_ELEMENTS);
         when(coursesPage.getTotalPages()).thenReturn(TOTAL_PAGES);
         when(coursesPage.toList()).thenReturn(coursesList);
-        when(courseRepository.findAll(any(Pageable.class))).thenReturn(coursesPage);
+        when(courseRepository.findAllByOrderById(any(Pageable.class))).thenReturn(coursesPage);
         final PaginationDto paginationDto = new PaginationDto(PAGE_NUMBER, TOTAL_PAGE_SIZE);
 
         // Act
         final CoursesPageDto coursesPageDto = courseService.getCourses(paginationDto);
 
         // Assert
-        verify(courseRepository).findAll(any(Pageable.class));
+        verify(courseRepository).findAllByOrderById(any(Pageable.class));
+        errorCollector.checkThat(coursesPageDto.getTotalPages(), equalTo(TOTAL_PAGES));
+        errorCollector.checkThat(coursesPageDto.getTotalElements(), equalTo(TOTAL_ELEMENTS));
+        errorCollector.checkThat(coursesPageDto.getCourses().size(), equalTo(coursesList.size()));
+    }
+
+    @Test
+    public void givenPaginationWhenGetCoursesWithoutStudentsThenReturnListOfCourses() {
+        // Arrange
+        final List<Course> coursesList = Collections.singletonList(courseMock);
+        final Page coursesPage = mock(Page.class);
+        when(coursesPage.getTotalElements()).thenReturn(TOTAL_ELEMENTS);
+        when(coursesPage.getTotalPages()).thenReturn(TOTAL_PAGES);
+        when(coursesPage.toList()).thenReturn(coursesList);
+        when(courseRepository.findAllWithoutStudents(any(Pageable.class))).thenReturn(coursesPage);
+        final PaginationDto paginationDto = new PaginationDto(PAGE_NUMBER, TOTAL_PAGE_SIZE);
+
+        // Act
+        final CoursesPageDto coursesPageDto = courseService.getAllCoursesWithoutStudents(paginationDto);
+
+        // Assert
+        verify(courseRepository).findAllWithoutStudents(any(Pageable.class));
         errorCollector.checkThat(coursesPageDto.getTotalPages(), equalTo(TOTAL_PAGES));
         errorCollector.checkThat(coursesPageDto.getTotalElements(), equalTo(TOTAL_ELEMENTS));
         errorCollector.checkThat(coursesPageDto.getCourses().size(), equalTo(coursesList.size()));
@@ -265,7 +301,8 @@ public class CourseServiceTest {
 
     private CourseDto buildCourseDto() {
         return CourseDto.builder()
-                .courseName("Course - 1")
+                .id(COURSE_ID)
+                .name("Course - 1")
                 .credits(2)
                 .teacherName("The teacher")
                 .build();

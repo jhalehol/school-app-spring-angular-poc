@@ -1,13 +1,16 @@
 <div class="filter-options">
   <div class="filter">
-
+    Filter by
+  </div>
+  <div class="filter">
+    <mat-checkbox [(ngModel)]="withoutCourses" (change)="filterChanged()">Only without courses</mat-checkbox>
   </div>
   <div class="add-button">
     <button mat-flat-button (click)="addStudent()">Add Student</button>
   </div>
 </div>
 <div class="container">
-  <table mat-table [dataSource]="studentsDataSource">
+  <table mat-table [dataSource]="listDataSource">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef>ID</th>
       <td mat-cell *matCellDef="let element">{{element.id}}</td>
@@ -38,8 +41,8 @@
     <tr mat-row *matRowDef="let row; columns: listColumns;"></tr>
   </table>
   <mat-paginator
-    [length]="totalElements"
-    [pageSize]="pageSize"
+    [length]="currentDataSource.totalElements"
+    [pageSize]="currentDataSource.pageSize"
     [pageSizeOptions]="[5, 10, 30]"
     [showFirstLastButtons]="true"
     (page)="pageEvent = loadStudents($event)">

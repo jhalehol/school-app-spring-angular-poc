@@ -1,3 +1,27 @@
-<p>
-  edit-course works!
-</p>
+<div class="container">
+  <h2 mat-dialog-title>Edit Course</h2>
+  <form novalidate [formGroup]="courseDataForm">
+    <div class="form">
+      <mat-form-field>
+        <input matInput placeholder="Names" formControlName="name">
+        <mat-error *ngIf="isRequiredFieldWithError('name')">
+          Name is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="form">
+      <mat-form-field>
+        <input matInput placeholder="Teacher Name" formControlName="teacherName" >
+      </mat-form-field>
+    </div>
+    <div class="form">
+      <mat-form-field>
+        <input matInput placeholder="Credits" formControlName="credits">
+      </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+      <button class="edit-button" type="submit" [disabled]="formWithErrors()" mat-flat-button (click)="saveCourse()">Save</button>
+      <button class="edit-button" mat-button (click)="closeCourseEdition()">Cancel</button>
+    </div>
+  </form>
+</div>

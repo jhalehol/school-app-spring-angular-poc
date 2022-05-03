@@ -41,11 +41,11 @@ public class CourseController {
         }
     }
 
-    @PostMapping(value = "/add", produces = "application/json")
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> addCourse(@RequestBody CourseDto course) {
         try {
-            courseService.addCourse(course);
-            return ResponseEntity.ok().build();
+            final CourseDto courseDto = courseService.addCourse(course);
+            return ResponseEntity.ok(courseDto);
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -54,8 +54,8 @@ public class CourseController {
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseDto course) {
         try {
-            courseService.updateCourse(id, course);
-            return ResponseEntity.ok().build();
+            final CourseDto courseDto = courseService.updateCourse(id, course);
+            return ResponseEntity.ok(courseDto);
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -68,6 +68,8 @@ public class CourseController {
             return ResponseEntity.ok().build();
         } catch (InvalidParametersException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
@@ -78,6 +80,16 @@ public class CourseController {
                 .pageSize(pageSize)
                 .build();
         final CoursesPageDto pageDto = courseService.getCourses(pagination);
+        return ResponseEntity.ok(pageDto);
+    }
+
+    @GetMapping(value = "/empty/{selectedPage}/{pageSize}", produces = "application/json")
+    public ResponseEntity<?> getCoursesWithoutStudents(@PathVariable Integer selectedPage, @PathVariable Integer pageSize) {
+        final PaginationDto pagination = PaginationDto.builder()
+                .pageNumber(selectedPage)
+                .pageSize(pageSize)
+                .build();
+        final CoursesPageDto pageDto = courseService.getAllCoursesWithoutStudents(pagination);
         return ResponseEntity.ok(pageDto);
     }
 
