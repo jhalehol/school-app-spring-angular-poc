@@ -4,14 +4,18 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { APP_BASE_HREF } from '@angular/common';
+import { MatMenuModule, MatPaginatorModule, MatTableModule, MatToolbarModule } from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HttpClientModule } from '@angular/common/http';
+import { AppRoutingModule } from '../../app-routing.module';
 
 import { NavBarComponent } from './nav-bar.component';
 import { Credentials } from '../../entities/credentials';
-import { MatToolbarModule } from '@angular/material';
-import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from '../../app-routing.module';
 import { LoginComponent } from '../login/login.component';
 import { StudentsComponent } from '../students/students.component';
+import { CoursesComponent } from '../courses/courses.component';
+import { StudentCoursesComponent } from '../student-courses/student-courses.component';
+import { CourseRegistrationComponent } from '../course-registration/course-registration.component';
 
 describe('NavBarComponent', () => {
   let component: NavBarComponent;
@@ -33,12 +37,19 @@ describe('NavBarComponent', () => {
         ReactiveFormsModule,
         MatToolbarModule,
         HttpClientModule,
-        AppRoutingModule
+        AppRoutingModule,
+        MatCheckboxModule,
+        MatTableModule,
+        MatMenuModule,
+        MatPaginatorModule
       ],
       declarations: [
         NavBarComponent,
         LoginComponent,
-        StudentsComponent
+        StudentsComponent,
+        CoursesComponent,
+        StudentCoursesComponent,
+        CourseRegistrationComponent
       ],
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' }
