@@ -15,6 +15,9 @@ import { Course } from '../../entities/course';
 import { CoursesService } from '../../services/courses.service';
 import { CoursesPage } from '../../entities/courses-page';
 import { EditCourseComponent } from '../edit-course/edit-course.component';
+import { AppPaths } from '../../common/app-paths';
+import { StudentCoursesComponent } from '../student-courses/student-courses.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-courses',
@@ -31,7 +34,8 @@ export class CoursesComponent implements OnInit {
 
   constructor(private coursesService: CoursesService,
               private dialog: MatDialog,
-              private messagesService: MessagesService) {
+              private messagesService: MessagesService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -132,5 +136,13 @@ export class CoursesComponent implements OnInit {
   updateDataFromList(result: EntityCrudResult) {
     this.currentDataSource = CrudViewUtil.updateListFromCrudResult(result, this.currentDataSource);
     this.listDataSource.data = this.currentDataSource.list;
+  }
+
+  navigateToCourseStudents(course: Course) {
+    // tslint:disable-next-line:max-line-length
+    this.router.navigate([AppPaths.UI.STUDENT_COURSES, {
+      mode: StudentCoursesComponent.COURSE_STUDENTS_MODE,
+      id: course.id
+    }]);
   }
 }

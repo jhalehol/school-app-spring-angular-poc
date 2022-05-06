@@ -1,4 +1,9 @@
 {
+  "/authentication/*": {
+    "target": "http://localhost:9200",
+    "secure": false,
+    "logLevel": "info"
+  },
   "/api/*": {
     "target": "http://localhost:9200",
     "secure": false,

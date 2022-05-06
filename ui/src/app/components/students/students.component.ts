@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { StudentsService } from '../../services/students.service';
 import { MatDialog, MatTableDataSource, PageEvent } from '@angular/material';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { AppConstants } from '../../common/app-constants';
 import { PaginationData } from '../../entities/pagination-data';
@@ -15,6 +16,8 @@ import { ConfirmActionComponent } from '../confirm-action/confirm-action.compone
 import { ConfirmAction } from '../../entities/confirm-action';
 import { TableListDatasource } from '../../entities/table-list-datasource';
 import { CrudViewUtil } from '../../common/crud-view-util';
+import { AppPaths } from '../../common/app-paths';
+import { StudentCoursesComponent } from '../student-courses/student-courses.component';
 
 @Component({
   selector: 'app-students',
@@ -31,7 +34,8 @@ export class StudentsComponent implements OnInit {
 
   constructor(private studentService: StudentsService,
               private dialog: MatDialog,
-              private messagesService: MessagesService) { }
+              private messagesService: MessagesService,
+              private router: Router) { }
 
   ngOnInit() {
     this.loadStudents();
@@ -131,5 +135,20 @@ export class StudentsComponent implements OnInit {
   updateDataFromList(result: EntityCrudResult) {
     this.currentDataSource = CrudViewUtil.updateListFromCrudResult(result, this.currentDataSource);
     this.listDataSource.data = this.currentDataSource.list;
+  }
+
+  navigateToStudentCourses(student: Student) {
+    // tslint:disable-next-line:max-line-length
+    this.router.navigate([AppPaths.UI.STUDENT_COURSES, {
+      mode: StudentCoursesComponent.STUDENTS_COURSE_MODE,
+      id: student.id
+    }]);
+  }
+
+  navigateToRegisterCourses(student: Student) {
+    // tslint:disable-next-line:max-line-length
+    this.router.navigate([AppPaths.UI.SUBSCRIBE_COURSES, {
+      studentId: student.id
+    }]);
   }
 }

@@ -64,7 +64,8 @@ export class AuthService {
   }
 
   public isAuthenticatedNonObservable(): boolean {
-    return this.getCurrentCredentials() != null;
+    const credentials: Credentials = this.getCurrentCredentials();
+    return credentials.credentialsAreValid();
   }
 
   public isAuthenticated(): Observable<boolean> {

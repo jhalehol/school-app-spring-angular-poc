@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     const isLogged = this.authService.isAuthenticatedNonObservable();
     if (isLogged) {
-      this.router.navigate([STUDENTS_URL]);
+      this.navigateToStudentsView();
     }
   }
 
@@ -36,10 +36,14 @@ export class LoginComponent implements OnInit {
       this.authService.authenticateUser(username, password)
         .subscribe(res => {
           this.authService.storeToken(res);
-          this.router.navigate([STUDENTS_URL]);
+          this.navigateToStudentsView();
         }, () => {
           this.authError = 'Invalid username/password';
         });
     }
+  }
+
+  navigateToStudentsView() {
+    this.router.navigate([STUDENTS_URL]);
   }
 }

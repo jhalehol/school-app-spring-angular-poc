@@ -10,7 +10,7 @@ export class MessagesService {
   }
 
   showErrorMessage(message) {
-    this.snackBar.open(message, '',{
+    this.snackBar.open(message, '', {
       duration: 3000
     });
   }
@@ -20,7 +20,13 @@ export class MessagesService {
   }
 
   showCrudCompleted() {
-    this.snackBar.open(`Action completed successfully`, '',{
+    this.snackBar.open(`Action completed successfully`, '', {
+      duration: 2000
+    });
+  }
+
+  showMessage(message) {
+    this.snackBar.open(message, '', {
       duration: 2000
     });
   }

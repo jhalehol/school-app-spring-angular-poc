@@ -34,6 +34,7 @@
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="editCourse(element.id)">Edit</button>
           <button mat-menu-item (click)="openDeleteConfirmation(element)">Delete</button>
+          <button mat-menu-item (click)="navigateToCourseStudents(element)">View Students</button>
         </mat-menu>
       </td>
     </ng-container>

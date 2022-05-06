@@ -7,22 +7,18 @@ table {
 }
 
 .entity-data {
-  width: 100%;
-  padding-bottom: 10px;
-}
-
-.student-data {
   text-align: left;
   float: left;
+  width: 100%;
   padding-top: 20px;
+  padding-bottom: 10px;
   padding-left: 20px;
 }
 
-.add-course-button {
-  float: left;
+.button {
   text-align: right;
-  padding-left: 30px;
-  padding-top: 10px;
-
+  padding-top: 20px;
+  padding-right: 30px;
+  float: right;
 }
 

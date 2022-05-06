@@ -1,3 +1,59 @@
-<p>
-  student-courses works!
-</p>
+
+<div class="container">
+  <div *ngIf="isCourseStudentsListMode()">
+    <div class="entity-data">
+      <span>Students for course: {{course.name}}</span>
+    </div>
+    <table mat-table [dataSource]="courseStudentsList">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{element.student.id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">{{element.student.name}} {{element.student.surname}}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">{{element.student.email}}</td>
+      </ng-container>
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef>Address</th>
+        <td mat-cell *matCellDef="let element">{{element.student.address}}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="listColumnsStudents"></tr>
+      <tr mat-row *matRowDef="let row; columns: listColumnsStudents;"></tr>
+    </table>
+  </div>
+  <div *ngIf="isStudentCoursesListMode()">
+    <div class="entity-data">
+      <div class="student-data">
+        <span>Register courses for student: {{student.name}} {{student.surname}}</span>
+      </div>
+      <div class="add-course-button">
+        <button mat-flat-button [disabled]="!allowAddStudentCourses()" (click)="addStudentCourses()">Add Courses</button>
+      </div>
+    </div>
+
+    <table mat-table [dataSource]="studentCoursesList">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{element.course.id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">{{element.course.name}}</td>
+      </ng-container>
+      <ng-container matColumnDef="teacherName">
+        <th mat-header-cell *matHeaderCellDef>Teacher</th>
+        <td mat-cell *matCellDef="let element">{{element.course.teacherName}}</td>
+      </ng-container>
+      <ng-container matColumnDef="credits">
+        <th mat-header-cell *matHeaderCellDef>Credits</th>
+        <td mat-cell *matCellDef="let element">{{element.course.credits}}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="listColumnsCourses"></tr>
+      <tr mat-row *matRowDef="let row; columns: listColumnsCourses;"></tr>
+    </table>
+  </div>
+</div>

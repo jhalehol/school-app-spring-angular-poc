@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="entity-data">
+    <span>Courses for student: {{student.name}} {{student.surname}}</span>
+  </div>
+  <div class="button">
+    <button mat-flat-button (click)="subscribeCourses()">Subscribe</button>
+  </div>
+  <table mat-table [dataSource]="listDataSource">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>Select</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)">
+
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let element">{{element.id}}</td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{element.name}}</td>
+    </ng-container>
+    <ng-container matColumnDef="teacherName">
+      <th mat-header-cell *matHeaderCellDef>Teacher</th>
+      <td mat-cell *matCellDef="let element">{{element.teacherName}}</td>
+    </ng-container>
+    <ng-container matColumnDef="credits">
+      <th mat-header-cell *matHeaderCellDef>Credits</th>
+      <td mat-cell *matCellDef="let element">{{element.credits}}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="listColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: listColumns;" (click)="selection.toggle(row)"></tr>
+  </table>
+</div>

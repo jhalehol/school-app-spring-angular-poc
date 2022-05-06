@@ -11,6 +11,7 @@ import { Student } from '../entities/student';
 import { ApiResponse } from '../entities/api-response';
 import { ApiResponseInterceptor } from '../interceptors/api-response-interceptor';
 import { AppConstants } from '../common/app-constants';
+import {CourseStudent} from '../entities/course-student';
 
 
 @Injectable({
@@ -27,6 +28,18 @@ export class StudentsService {
       .get<StudentsPage>(`${AppPaths.API.STUDENTS_URL}/${pagination.pageNumber}/${pagination.pageSize}`)
       .pipe(
         map((data: StudentsPage) => {
+          return this.responseInterceptor.processApiResponse(data);
+        }), catchError(error => {
+          return of(this.responseInterceptor.processApiError(error));
+        })
+      );
+  }
+
+  public getStudentsCourses(studentId: string): Observable<ApiResponse> {
+    return this.httpClient
+      .get<CourseStudent[]>(`${AppPaths.API.STUDENTS_URL}/${studentId}/courses`)
+      .pipe(
+        map((data: CourseStudent[]) => {
           return this.responseInterceptor.processApiResponse(data);
         }), catchError(error => {
           return of(this.responseInterceptor.processApiError(error));

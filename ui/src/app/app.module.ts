@@ -23,6 +23,7 @@ import { EditStudentComponent } from './components/edit-student/edit-student.com
 import { EditCourseComponent } from './components/edit-course/edit-course.component';
 import { ApiRequestInterceptor } from './interceptors/api-request-interceptor';
 import { ConfirmActionComponent } from './components/confirm-action/confirm-action.component';
+import { CourseRegistrationComponent } from './components/course-registration/course-registration.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ConfirmActionComponent } from './components/confirm-action/confirm-acti
     CoursesComponent,
     EditStudentComponent,
     EditCourseComponent,
-    ConfirmActionComponent
+    ConfirmActionComponent,
+    CourseRegistrationComponent
   ],
   entryComponents: [
     EditStudentComponent,

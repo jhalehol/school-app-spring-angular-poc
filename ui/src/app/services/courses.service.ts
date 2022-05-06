@@ -11,6 +11,8 @@ import { AppPaths } from '../common/app-paths';
 import { CoursesPage } from '../entities/courses-page';
 import { Course } from '../entities/course';
 import { AppConstants } from '../common/app-constants';
+import { CourseStudent } from '../entities/course-student';
+import { CourseRegistrationResult } from '../entities/course-registration-result';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +40,42 @@ export class CoursesService {
       .get<CoursesPage>(`${AppPaths.API.COURSES_URL}/empty/${pagination.pageNumber}/${pagination.pageSize}`)
       .pipe(
         map((data: CoursesPage) => {
+          return this.responseInterceptor.processApiResponse(data);
+        }), catchError(error => {
+          return of(this.responseInterceptor.processApiError(error));
+        })
+      );
+  }
+
+  public getCoursesAvailableForStudent(studentId: string): Observable<ApiResponse> {
+    return this.httpClient
+      .get<Course[]>(`${AppPaths.API.COURSES_URL}/available/${studentId}`)
+      .pipe(
+        map((data: Course[]) => {
+          return this.responseInterceptor.processApiResponse(data);
+        }), catchError(error => {
+          return of(this.responseInterceptor.processApiError(error));
+        })
+      );
+  }
+
+  public subscribeStudentInCourses(studentId: string, coursesIds: string[]): Observable<ApiResponse> {
+    return this.httpClient
+      .post(`${AppPaths.API.COURSES_URL}/register/${studentId}`, coursesIds, AppConstants.COMMON_HTTP_OPTIONS)
+      .pipe(
+        map((data: CourseRegistrationResult[]) => {
+          return this.responseInterceptor.processApiResponse(data);
+        }), catchError(error => {
+          return of(this.responseInterceptor.processApiError(error));
+        })
+      );
+  }
+
+  public getCourseStudents(courseId: string): Observable<ApiResponse> {
+    return this.httpClient
+      .get<CourseStudent[]>(`${AppPaths.API.COURSES_URL}/${courseId}/students`)
+      .pipe(
+        map((data: CourseStudent[]) => {
           return this.responseInterceptor.processApiResponse(data);
         }), catchError(error => {
           return of(this.responseInterceptor.processApiError(error));
