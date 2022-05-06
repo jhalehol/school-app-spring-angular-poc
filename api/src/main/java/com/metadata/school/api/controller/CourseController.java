@@ -11,6 +11,7 @@ import com.metadata.school.api.exception.NotFoundException;
 import com.metadata.school.api.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ public class CourseController {
     }
 
     @PostMapping(produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addCourse(@RequestBody CourseDto course) {
         try {
             final CourseDto courseDto = courseService.addCourse(course);
@@ -53,6 +55,7 @@ public class CourseController {
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseDto course) {
         try {
             final CourseDto courseDto = courseService.updateCourse(id, course);
@@ -63,6 +66,7 @@ public class CourseController {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         try {
             courseService.deleteCourse(id);
@@ -115,6 +119,7 @@ public class CourseController {
     }
 
     @PostMapping(value = "/register/{studentId}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerStudentInCourse(@PathVariable Long studentId,
             @RequestBody List<Long> courses) {
         try {

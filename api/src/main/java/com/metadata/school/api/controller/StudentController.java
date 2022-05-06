@@ -11,6 +11,7 @@ import com.metadata.school.api.service.CourseService;
 import com.metadata.school.api.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,7 @@ public class StudentController {
     }
 
     @PostMapping(produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addStudent(@RequestBody StudentDto student) {
         try {
             final StudentDto studentDto = studentService.addStudent(student);
@@ -65,6 +67,7 @@ public class StudentController {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         try {
             studentService.deleteStudent(id);
