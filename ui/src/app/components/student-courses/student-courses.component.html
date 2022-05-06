@@ -2,7 +2,9 @@
 <div class="container">
   <div *ngIf="isCourseStudentsListMode()">
     <div class="entity-data">
-      <span>Students for course: {{course.name}}</span>
+      <div class="student-data">
+        <span>Students for course: {{course.name}}</span>
+      </div>
     </div>
     <table mat-table [dataSource]="courseStudentsList">
       <ng-container matColumnDef="id">
