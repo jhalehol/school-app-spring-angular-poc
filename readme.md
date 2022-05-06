@@ -22,10 +22,6 @@ http://localhost:9200/swagger-ui/index.html
 * Docker (Supporting docker-compose command)
 * Maven 3+
 
-### Building images on ARM based processors
-If you use machine using ARM based processor (i.e. M1 processor) please change
-the base image of the API from `maven:3.8-openjdk-18` to `arm64v8/maven:3.8-openjdk-18`
-
 
 You can run the complete stack of the application using docker-compose command without DB configuration and
 using current docker compose configuration provided in the root path, to run the stack simply run the provided script:
