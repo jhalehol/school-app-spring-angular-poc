@@ -13,6 +13,8 @@ public interface CourseStudentRepository extends CrudRepository<CourseStudent, L
 
     long countByCourse(Course course);
 
+    long countByStudent(Student student);
+
     CourseStudent findDistinctFirstByCourseAndStudent(Course course, Student student);
 
     List<CourseStudent> getAllByCourse(Course course);

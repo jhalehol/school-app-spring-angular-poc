@@ -1,6 +1,7 @@
 package com.metadata.school.api.service;
 
 import com.metadata.school.api.dto.CourseDto;
+import com.metadata.school.api.dto.CourseRegistrationResultDto;
 import com.metadata.school.api.dto.CourseStudentDto;
 import com.metadata.school.api.dto.CoursesPageDto;
 import com.metadata.school.api.dto.PaginationDto;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     static final long MAX_STUDENTS_BY_COURSE = 50;
+    static final long MAX_COURSES_BY_STUDENT = 5;
     private final CourseRepository courseRepository;
     private final StudentService studentService;
     private final CourseStudentRepository courseStudentRepository;
@@ -127,22 +130,45 @@ public class CourseService {
 
     /**
      * Register the given student id into the given course
-     * @param courseId Course identifier
+     * @param courses Courses identifier
      * @param studentId Student identifier
      * @throws NotFoundException
      */
-    public void registerStudentInCourse(final Long courseId, final Long studentId)
+    public List<CourseRegistrationResultDto> registerStudentInCourses(final Long studentId, final List<Long> courses)
             throws NotFoundException, ForbiddenException {
         final Student student = studentService.findStudent(studentId);
-        final Course course = findCourse(courseId);
+        final List<CourseRegistrationResultDto> results = new ArrayList<>();
+        courses.forEach(courseId -> {
+            if (courseId != null) {
+                boolean success = true;
+                String message = "";
+                String courseName = "Not found";
+                try {
 
-        validateAllowedStudentInCourse(course, student);
-        final CourseStudent courseStudent = CourseStudent.builder()
-                .course(course)
-                .student(student)
-                .build();
+                    final Course course = findCourse(courseId);
+                    validateAllowedStudentInCourse(course, student);
+                    final CourseStudent courseStudent = CourseStudent.builder()
+                            .course(course)
+                            .student(student)
+                            .build();
 
-        courseStudentRepository.save(courseStudent);
+                    courseStudentRepository.save(courseStudent);
+                } catch (NotFoundException | ForbiddenException e) {
+                    success = false;
+                    message = e.getMessage();
+                }
+
+                results.add(CourseRegistrationResultDto.builder()
+                        .courseId(courseId)
+                        .studentId(studentId)
+                        .courseName(courseName)
+                        .success(success)
+                        .details(message)
+                        .build());
+            }
+        });
+
+        return results;
     }
 
     /**
@@ -164,6 +190,20 @@ public class CourseService {
         final Pageable pageable = paginationData.toPageable();
         final Page<Course> coursesPage = courseRepository.findAllByOrderById(pageable);
         return CoursesPageDto.convertToDto(coursesPage);
+    }
+
+    /**
+     * Return the list of courses available for subscription for the given student
+     * @param studentId Student identifier
+     * @return List of courses
+     * @throws NotFoundException
+     */
+    public List<CourseDto> getAllAvailableForStudent(final Long studentId) throws NotFoundException {
+        final Student student = studentService.findStudent(studentId);
+        return courseRepository.findAllAvailableForStudent(student.getId())
+                .stream()
+                .map(CourseDto::convertToDto)
+                .collect(Collectors.toList());
     }
 
     private List<CourseStudentDto> convertCourseStudents(List<CourseStudent> courseStudents) {
@@ -196,9 +236,15 @@ public class CourseService {
                     student.getCompleteName(), course.getCourseName()));
         }
 
+        final long totalStudentCourses = courseStudentRepository.countByStudent(student);
+        if (totalStudentCourses >= MAX_COURSES_BY_STUDENT) {
+            throw new ForbiddenException(String.format("Only %s courses are allowed per student",
+                    MAX_COURSES_BY_STUDENT));
+        }
+
         final long totalStudentsInCourse = courseStudentRepository.countByCourse(course);
         if (totalStudentsInCourse >= MAX_STUDENTS_BY_COURSE) {
-            throw new ForbiddenException(String.format("The course only allow %s students subscribed!",
+            throw new ForbiddenException(String.format("The course only allow %s students subscribed",
                     MAX_STUDENTS_BY_COURSE));
         }
     }

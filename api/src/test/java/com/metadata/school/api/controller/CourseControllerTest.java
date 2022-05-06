@@ -211,21 +211,26 @@ public class CourseControllerTest {
 
     @Test
     public void givenCourseIdAndStudentIdWhenRegisterThenReturnOk() throws Exception {
+        // Arrange
+        final List<Long> courses = Collections.singletonList(COURSE_ID);
+
         // Act
-        controller.registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        controller.registerStudentInCourse(STUDENT_ID, courses);
 
         // Assert
-        verify(courseService).registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        verify(courseService).registerStudentInCourses(STUDENT_ID, courses);
     }
 
     @Test
     public void givenCourseIdAndStudentIdWhenRegisterFailsThenReturnFailed() throws Exception {
+
         // Arrange
-        doThrow(ForbiddenException.class).when(courseService).registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        final List<Long> courses = Collections.singletonList(COURSE_ID);
+        doThrow(ForbiddenException.class).when(courseService).registerStudentInCourses(STUDENT_ID, courses);
         // Act
-        controller.registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        controller.registerStudentInCourse(STUDENT_ID, courses);
 
         // Assert
-        verify(courseService).registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        verify(courseService).registerStudentInCourses(STUDENT_ID, courses);
     }
 }

@@ -1,6 +1,7 @@
 package com.metadata.school.api.controller;
 
 import com.metadata.school.api.dto.CourseDto;
+import com.metadata.school.api.dto.CourseRegistrationResultDto;
 import com.metadata.school.api.dto.CourseStudentDto;
 import com.metadata.school.api.dto.CoursesPageDto;
 import com.metadata.school.api.dto.PaginationDto;
@@ -83,6 +84,16 @@ public class CourseController {
         return ResponseEntity.ok(pageDto);
     }
 
+    @GetMapping(value = "/available/{studentId}", produces = "application/json")
+    public ResponseEntity<?> getStudentCoursesAvailable(@PathVariable Long studentId) {
+        try {
+            final List<CourseDto> courses = courseService.getAllAvailableForStudent(studentId);
+            return ResponseEntity.ok(courses);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @GetMapping(value = "/empty/{selectedPage}/{pageSize}", produces = "application/json")
     public ResponseEntity<?> getCoursesWithoutStudents(@PathVariable Integer selectedPage, @PathVariable Integer pageSize) {
         final PaginationDto pagination = PaginationDto.builder()
@@ -103,11 +114,12 @@ public class CourseController {
         }
     }
 
-    @PostMapping(value = "/{courseId}/student/add/{studentId}", produces = "application/json")
-    public ResponseEntity<?> registerStudentInCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
+    @PostMapping(value = "/register/{studentId}", produces = "application/json")
+    public ResponseEntity<?> registerStudentInCourse(@PathVariable Long studentId,
+            @RequestBody List<Long> courses) {
         try {
-            courseService.registerStudentInCourse(courseId, studentId);
-            return ResponseEntity.ok().build();
+            List<CourseRegistrationResultDto> results = courseService.registerStudentInCourses(studentId, courses);
+            return ResponseEntity.ok(results);
         } catch (NotFoundException | ForbiddenException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

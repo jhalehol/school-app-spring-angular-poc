@@ -1,6 +1,7 @@
 package com.metadata.school.api.service;
 
 import com.metadata.school.api.dto.CourseDto;
+import com.metadata.school.api.dto.CourseRegistrationResultDto;
 import com.metadata.school.api.dto.CourseStudentDto;
 import com.metadata.school.api.dto.CoursesPageDto;
 import com.metadata.school.api.dto.PaginationDto;
@@ -23,14 +24,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.metadata.school.api.service.CourseService.MAX_COURSES_BY_STUDENT;
 import static com.metadata.school.api.service.CourseService.MAX_STUDENTS_BY_COURSE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +42,7 @@ import static org.mockito.Mockito.when;
 public class CourseServiceTest {
 
     private static final long COURSE_ID = 777;
+    private static final long COURSE_ID_2 = 999;
     private static final long STUDENT_ID = 888;
     private static final String COURSE_NAME = "Mathematics";
     private static final String STUDENT_NAME = "Peter Parker";
@@ -212,49 +217,85 @@ public class CourseServiceTest {
     @Test
     public void givenValidCourseAndStudentWhenRegisterStudentThenShouldBeSuccess() throws Exception {
         // Arrange
+        final List<Long> courses = new ArrayList<>();
+        courses.add(COURSE_ID);
+        courses.add(COURSE_ID_2);
         when(studentService.findStudent(STUDENT_ID)).thenReturn(studentMock);
         when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
+        when(courseRepository.findById(COURSE_ID_2)).thenReturn(Optional.of(courseMock));
 
         // Act
-        courseService.registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        courseService.registerStudentInCourses(STUDENT_ID, courses);
 
         // Assert
+        final int timesCalled = courses.size();
         verify(studentService).findStudent(STUDENT_ID);
         verify(courseRepository).findById(COURSE_ID);
-        verify(courseStudentRepository).findDistinctFirstByCourseAndStudent(courseMock, studentMock);
-        verify(courseStudentRepository).countByCourse(courseMock);
-        verify(courseStudentRepository).save(any(CourseStudent.class));
+        verify(courseRepository).findById(COURSE_ID_2);
+        verify(courseStudentRepository, times(timesCalled)).findDistinctFirstByCourseAndStudent(courseMock, studentMock);
+        verify(courseStudentRepository, times(timesCalled)).countByCourse(courseMock);
+        verify(courseStudentRepository, times(timesCalled)).save(any(CourseStudent.class));
     }
 
     @Test
     public void givenValidCourseButStudentSubscribedWhenRegisterStudentThenShouldFail() throws Exception {
         // Arrange
+        final List<Long> courses = Collections.singletonList(COURSE_ID);
         when(studentService.findStudent(STUDENT_ID)).thenReturn(studentMock);
         when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
         when(courseStudentRepository.findDistinctFirstByCourseAndStudent(courseMock, studentMock))
                 .thenReturn(mock(CourseStudent.class));
 
-        // Act && Assert
-        expectedException.expect(ForbiddenException.class);
-        expectedException.expectMessage(String.format("Student %s is already registered in the course %s",
-                STUDENT_NAME, COURSE_NAME));
+        // Act
+        final List<CourseRegistrationResultDto> results = courseService.registerStudentInCourses(STUDENT_ID, courses);
 
-        courseService.registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        // Assert
+        errorCollector.checkThat(results.size(), equalTo(courses.size()));
+        errorCollector.checkThat(results.get(0).getCourseId(), equalTo(COURSE_ID));
+        errorCollector.checkThat(results.get(0).isSuccess(), equalTo(false));
+        errorCollector.checkThat(results.get(0).getCourseName(), equalTo("Not found"));
+        errorCollector.checkThat(results.get(0).getDetails(),
+                equalTo("Student Peter Parker is already registered in the course Mathematics"));
     }
 
     @Test
     public void givenMaxLimitSubscriptionsByCourseWhenRegisterStudentThenShouldFail() throws Exception {
         // Arrange
+        final List<Long> courses = Collections.singletonList(COURSE_ID);
         when(studentService.findStudent(STUDENT_ID)).thenReturn(studentMock);
         when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
         when(courseStudentRepository.countByCourse(courseMock)).thenReturn(MAX_STUDENTS_BY_COURSE + 1);
 
-        // Act && Assert
-        expectedException.expect(ForbiddenException.class);
-        expectedException.expectMessage(String.format("The course only allow %s students subscribed!",
-                MAX_STUDENTS_BY_COURSE));
+        // Act
+        final List<CourseRegistrationResultDto> results = courseService.registerStudentInCourses(STUDENT_ID, courses);
 
-        courseService.registerStudentInCourse(COURSE_ID, STUDENT_ID);
+        // Assert
+        errorCollector.checkThat(results.size(), equalTo(courses.size()));
+        errorCollector.checkThat(results.get(0).getCourseId(), equalTo(COURSE_ID));
+        errorCollector.checkThat(results.get(0).isSuccess(), equalTo(false));
+        errorCollector.checkThat(results.get(0).getCourseName(), equalTo("Not found"));
+        errorCollector.checkThat(results.get(0).getDetails(),
+                equalTo("The course only allow 50 students subscribed"));
+    }
+
+    @Test
+    public void givenMaxLimitSubscriptionsByStudentWhenRegisterStudentThenShouldFail() throws Exception {
+        // Arrange
+        final List<Long> courses = Collections.singletonList(COURSE_ID);
+        when(studentService.findStudent(STUDENT_ID)).thenReturn(studentMock);
+        when(courseRepository.findById(COURSE_ID)).thenReturn(Optional.of(courseMock));
+        when(courseStudentRepository.countByStudent(studentMock)).thenReturn(MAX_COURSES_BY_STUDENT + 1);
+
+        // Act
+        final List<CourseRegistrationResultDto> results = courseService.registerStudentInCourses(STUDENT_ID, courses);
+
+        // Assert
+        errorCollector.checkThat(results.size(), equalTo(courses.size()));
+        errorCollector.checkThat(results.get(0).getCourseId(), equalTo(COURSE_ID));
+        errorCollector.checkThat(results.get(0).isSuccess(), equalTo(false));
+        errorCollector.checkThat(results.get(0).getCourseName(), equalTo("Not found"));
+        errorCollector.checkThat(results.get(0).getDetails(),
+                equalTo("Only 5 courses are allowed per student"));
     }
 
     @Test
