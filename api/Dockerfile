@@ -1,4 +1,4 @@
-FROM arm64v8/maven:3.8-openjdk-18
+FROM maven:3.8-openjdk-18
 
 COPY docker/assets/*.sh /app/
 COPY *.sh /app/
