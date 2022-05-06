@@ -8,7 +8,11 @@ export class AppConstants {
 
   public static FORM_VALIDATIONS = {
     REQUIRED: 'required',
-    EMAIL: 'email'
+    EMAIL: 'email',
+    MAX_LENGTH: 'maxlength',
+    MIN_LENGTH: 'minlength',
+    MAX_VALUE: 'max',
+    MIN_VALUE: 'min'
   };
 
   public static FORM_ACTION = {

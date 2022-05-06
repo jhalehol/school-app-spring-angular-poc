@@ -10,6 +10,7 @@ import { EntityCrudResult } from '../../entities/entity-crud-result';
 import { MessagesService } from '../../services/messages-service';
 import { CoursesService } from '../../services/courses.service';
 import { Course } from '../../entities/course';
+import {CrudViewUtil} from '../../common/crud-view-util';
 
 @Component({
   selector: 'app-edit-course',
@@ -40,25 +41,20 @@ export class EditCourseComponent implements OnInit {
 
   buildFormControls() {
     this.courseDataForm = new FormGroup({
-      name: new FormControl('', [Validators.required]),
-      teacherName: new FormControl(''),
-      credits: new FormControl('', )
+      name: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      teacherName: new FormControl('', [Validators.maxLength(100)]),
+      credits: new FormControl('', [Validators.max(50)])
     });
   }
 
-  isRequiredFieldWithError(control: string): boolean {
-    if (this.courseDataForm) {
-      const formControl = this.courseDataForm.controls[control];
-      if (formControl) {
-        return formControl.hasError(AppConstants.FORM_VALIDATIONS.REQUIRED);
-      }
-    }
-
-    return false;
+  isFieldWithError(control) {
+    return CrudViewUtil.isRequiredFieldWithError(this.courseDataForm, control);
   }
 
   formWithErrors(): boolean {
-    return this.isRequiredFieldWithError('name');
+    return this.isFieldWithError('name') ||
+      this.isFieldWithError('teacherName') ||
+      this.isFieldWithError('credits');
   }
 
   saveCourse() {

@@ -3,20 +3,21 @@
   <form novalidate [formGroup]="courseDataForm">
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Names" formControlName="name">
-        <mat-error *ngIf="isRequiredFieldWithError('name')">
-          Name is required
-        </mat-error>
+        <input matInput placeholder="Names" formControlName="name" [errorStateMatcher]="formMatcher">
+        <mat-error *ngIf="courseDataForm.controls.name.hasError('maxlength')">Max length exceeded</mat-error>
+        <mat-error *ngIf="courseDataForm.controls.name.hasError('required')">Name is required</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Teacher Name" formControlName="teacherName" >
+        <input matInput placeholder="Teacher Name" formControlName="teacherName" [errorStateMatcher]="formMatcher" >
+        <mat-error *ngIf="courseDataForm.controls.teacherName.hasError('maxlength')">Max length exceeded</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Credits" formControlName="credits">
+        <input type="number" matInput placeholder="Credits" formControlName="credits"  [errorStateMatcher]="formMatcher" >
+        <mat-error *ngIf="courseDataForm.controls.credits.hasError('max')">Max value exceed</mat-error>
       </mat-form-field>
     </div>
     <div mat-dialog-actions>

@@ -3,37 +3,35 @@
   <form novalidate [formGroup]="studentDataForm">
     <div class="form">
       <mat-form-field>
-        <input matInput type="text" placeholder="Identification" formControlName="idNumber" />
-        <mat-error *ngIf="isRequiredFieldWithError('idNumber')">
-          Identification is required
-        </mat-error>
+        <input matInput type="text" placeholder="Identification" formControlName="idNumber" [errorStateMatcher]="formMatcher"/>
+        <mat-error *ngIf="studentDataForm.controls.idNumber.hasError('maxlength')">Max length exceeded</mat-error>
+        <mat-error *ngIf="studentDataForm.controls.idNumber.hasError('required')">Identification is required</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Names" formControlName="name">
-        <mat-error *ngIf="isRequiredFieldWithError('name')">
-          Name is required
-        </mat-error>
+        <input matInput placeholder="Names" formControlName="name" [errorStateMatcher]="formMatcher">
+        <mat-error *ngIf="studentDataForm.controls.name.hasError('maxlength')">Max length exceeded</mat-error>
+        <mat-error *ngIf="studentDataForm.controls.name.hasError('required')">Name is required</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Surnames" formControlName="surname" >
+        <input matInput placeholder="Surnames" formControlName="surname" [errorStateMatcher]="formMatcher">
+        <mat-error *ngIf="studentDataForm.controls.surname.hasError('maxlength')">Max length exceeded</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
         <input matInput placeholder="Email" formControlName="email" [errorStateMatcher]="formMatcher"
                name="email">
-        <mat-error *ngIf="isRequiredFieldWithError('email')">
-          Please fill a valid email address
-        </mat-error>
+        <mat-error *ngIf="studentDataForm.controls.email.hasError('maxlength')">Max length exceeded</mat-error>
       </mat-form-field>
     </div>
     <div class="form">
       <mat-form-field>
-        <input matInput placeholder="Address" formControlName="address" name="address">
+        <input matInput placeholder="Address" formControlName="address" name="address" [errorStateMatcher]="formMatcher">
+        <mat-error *ngIf="studentDataForm.controls.address.hasError('maxlength')">Max length exceeded</mat-error>
       </mat-form-field>
     </div>
     <div mat-dialog-actions>

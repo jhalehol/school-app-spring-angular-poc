@@ -10,6 +10,7 @@ import { StudentsService } from '../../services/students.service';
 import { ApiResponse } from '../../entities/api-response';
 import { EntityCrudResult } from '../../entities/entity-crud-result';
 import { MessagesService } from '../../services/messages-service';
+import {CrudViewUtil} from '../../common/crud-view-util';
 
 @Component({
   selector: 'app-edit-student',
@@ -39,28 +40,25 @@ export class EditStudentComponent implements OnInit {
 
   buildFormControls() {
     this.studentDataForm = new FormGroup({
-      idNumber: new FormControl('', [Validators.required]),
-      name: new FormControl('', [Validators.required]),
-      surname: new FormControl(''),
-      email: new FormControl('', [Validators.required]),
-      address: new FormControl('')
+      idNumber: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      surname: new FormControl('', [Validators.maxLength(100)]),
+      email: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      address: new FormControl('', [Validators.maxLength(200)])
     });
   }
 
-  isRequiredFieldWithError(control: string): boolean {
-    if (this.studentDataForm) {
-      const formControl = this.studentDataForm.controls[control];
-      if (formControl) {
-        return formControl.hasError(AppConstants.FORM_VALIDATIONS.REQUIRED);
-      }
-    }
 
-    return false;
+  isFieldWithError(control) {
+    return CrudViewUtil.isRequiredFieldWithError(this.studentDataForm, control);
   }
 
   formWithErrors(): boolean {
-    return this.isRequiredFieldWithError('email') || this.isRequiredFieldWithError('name')
-      || this.isRequiredFieldWithError('idNumber');
+    return this.isFieldWithError('idNumber') ||
+      this.isFieldWithError('name') ||
+      this.isFieldWithError('surname') ||
+      this.isFieldWithError('email') ||
+      this.isFieldWithError('address');
   }
 
   saveStudent() {

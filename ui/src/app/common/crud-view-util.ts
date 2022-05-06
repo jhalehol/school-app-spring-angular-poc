@@ -1,7 +1,7 @@
-import {EntityCrudResult} from '../entities/entity-crud-result';
-import {Student} from '../entities/student';
-import {AppConstants} from './app-constants';
-import {TableListDatasource} from '../entities/table-list-datasource';
+import { EntityCrudResult } from '../entities/entity-crud-result';
+import { AppConstants } from './app-constants';
+import { TableListDatasource } from '../entities/table-list-datasource';
+import { FormGroup } from '@angular/forms';
 
 export class CrudViewUtil {
 
@@ -27,6 +27,19 @@ export class CrudViewUtil {
     }
 
     return datasource;
+  }
+
+  static isRequiredFieldWithError(form: FormGroup, control: string): boolean {
+    if (form) {
+      const formControl = form.controls[control];
+      if (formControl) {
+        return formControl.hasError(AppConstants.FORM_VALIDATIONS.REQUIRED) ||
+          formControl.hasError(AppConstants.FORM_VALIDATIONS.MAX_LENGTH) ||
+          formControl.hasError(AppConstants.FORM_VALIDATIONS.MAX_VALUE);
+      }
+    }
+
+    return false;
   }
 }
 
