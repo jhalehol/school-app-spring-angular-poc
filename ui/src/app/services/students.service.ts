@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { AuthService } from './auth.service';
 import { AppPaths } from '../common/app-paths';
 import { catchError, map } from 'rxjs/operators';
 
@@ -11,7 +10,7 @@ import { Student } from '../entities/student';
 import { ApiResponse } from '../entities/api-response';
 import { ApiResponseInterceptor } from '../interceptors/api-response-interceptor';
 import { AppConstants } from '../common/app-constants';
-import {CourseStudent} from '../entities/course-student';
+import { CourseStudent } from '../entities/course-student';
 
 
 @Injectable({
@@ -20,7 +19,6 @@ import {CourseStudent} from '../entities/course-student';
 export class StudentsService {
 
   constructor(private httpClient: HttpClient,
-              private authService: AuthService,
               private responseInterceptor: ApiResponseInterceptor) { }
 
   public getStudents(pagination: PaginationData): Observable<ApiResponse> {

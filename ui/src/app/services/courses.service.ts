@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
@@ -20,7 +19,6 @@ import { CourseRegistrationResult } from '../entities/course-registration-result
 export class CoursesService {
 
   constructor(private httpClient: HttpClient,
-              private authService: AuthService,
               private responseInterceptor: ApiResponseInterceptor) { }
 
   public getCourses(pagination: PaginationData): Observable<ApiResponse> {

@@ -15,6 +15,7 @@ import { StudentsComponent } from '../students/students.component';
 import { CoursesComponent } from '../courses/courses.component';
 import { StudentCoursesComponent } from './student-courses.component';
 import { CourseRegistrationComponent } from '../course-registration/course-registration.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('StudentCoursesComponent', () => {
   let component: StudentCoursesComponent;
@@ -34,12 +35,13 @@ describe('StudentCoursesComponent', () => {
         MatMenuModule,
         MatPaginatorModule,
         MatSnackBarModule,
-        FormsModule
+        FormsModule,
+        BrowserAnimationsModule
       ],
       declarations: [
+        StudentsComponent,
         StudentCoursesComponent,
         LoginComponent,
-        StudentsComponent,
         CoursesComponent,
         CourseRegistrationComponent
       ],
