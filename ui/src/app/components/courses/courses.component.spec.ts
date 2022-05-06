@@ -41,7 +41,6 @@ describe('CoursesComponent', () => {
         CoursesComponent,
         LoginComponent,
         StudentsComponent,
-        CoursesComponent,
         StudentCoursesComponent,
         CourseRegistrationComponent
       ],
