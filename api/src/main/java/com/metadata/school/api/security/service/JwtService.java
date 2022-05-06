@@ -38,7 +38,7 @@ public class JwtService {
     public static final String JWT_TYPE = "JWT";
     private static final String JWT_ISSUER = "Metadata";
     private static final Integer JWT_NOT_BEFORE_MINS = 2;
-    private static final String JWT_SUBJECT = "financial-token";
+    private static final String JWT_SUBJECT = "school-authorization";
     private static final String JWT_USER_CLAIM = "user-id";
     public static final String JWT_IAT_KEY = "iat";
     public static final String JWT_IAT_TTL_KEY = "iatTTL";
