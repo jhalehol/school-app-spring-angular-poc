@@ -19,7 +19,7 @@ describe('AuthService', () => {
     // Arrange
     const credentials: Credentials = new Credentials();
     credentials.token = TOKEN;
-    credentials.username = USERNAME;
+    credentials.userName = USERNAME;
     const router = mockRouter();
 
     const httpClientSpy: any = {
@@ -34,7 +34,7 @@ describe('AuthService', () => {
     expect(httpClientSpy.post).toHaveBeenCalled();
     result.subscribe(data => {
       expect(data.token).toBe(TOKEN);
-      expect(data.username).toBe(USERNAME);
+      expect(data.userName).toBe(USERNAME);
     });
   });
 

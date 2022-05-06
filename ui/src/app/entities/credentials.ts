@@ -1,10 +1,10 @@
 export class Credentials {
 
-  username: string;
+  userName: string;
   token: string;
 
   credentialsAreValid() {
-    return this.username !== '' && this.username !== undefined && this.username !== null &&
+    return this.userName !== '' && this.userName !== undefined && this.userName !== null &&
       this.token !== '' && this.token !== undefined && this.token !== null;
   }
 }

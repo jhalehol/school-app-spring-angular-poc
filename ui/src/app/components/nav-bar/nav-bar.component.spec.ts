@@ -21,7 +21,7 @@ describe('NavBarComponent', () => {
   let component: NavBarComponent;
   let fixture: ComponentFixture<NavBarComponent>;
 
-  const credentials = new Credentials().username = 'Peter';
+  const credentials = new Credentials().userName = 'Peter';
   const authService: any = {
     isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(of(true)),
     getCurrentCredentials: jasmine.createSpy('getCurrentCredentials').and.returnValue(credentials),

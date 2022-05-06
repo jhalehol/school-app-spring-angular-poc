@@ -32,14 +32,14 @@ export class AuthService {
   public storeToken(credentials: Credentials) {
     this.cleanTokenStored();
     window.sessionStorage.setItem(TOKEN_KEY, credentials.token);
-    window.sessionStorage.setItem(USERNAME_KEY, credentials.username);
+    window.sessionStorage.setItem(USERNAME_KEY, credentials.userName);
     this.authenticated.next(true);
   }
 
   public getCurrentCredentials(): Credentials {
     const credentials = new Credentials();
     credentials.token = window.sessionStorage.getItem(TOKEN_KEY);
-    credentials.username = window.sessionStorage.getItem(USERNAME_KEY);
+    credentials.userName = window.sessionStorage.getItem(USERNAME_KEY);
     return credentials;
   }
 

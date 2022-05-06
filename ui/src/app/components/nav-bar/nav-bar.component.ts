@@ -19,7 +19,7 @@ export class NavBarComponent implements OnInit {
     this.isAuthenticated = this.authService.isAuthenticated();
     this.isAuthenticated.subscribe(isLoggedIn => {
       if (isLoggedIn) {
-        this.userName = this.authService.getCurrentCredentials().username;
+        this.userName = this.authService.getCurrentCredentials().userName;
       }
     });
   }
