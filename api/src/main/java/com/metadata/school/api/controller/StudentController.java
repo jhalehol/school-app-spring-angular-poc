@@ -46,7 +46,6 @@ public class StudentController {
     }
 
     @PostMapping(produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addStudent(@RequestBody StudentDto student) {
         try {
             final StudentDto studentDto = studentService.addStudent(student);
@@ -67,7 +66,6 @@ public class StudentController {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         try {
             studentService.deleteStudent(id);
