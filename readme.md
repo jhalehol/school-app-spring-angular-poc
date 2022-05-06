@@ -10,7 +10,11 @@ UI (Angular/nginx): Nginx server that serves the UI compiled
 * UI requires basic authentication user/password authentication to access to the UI
 * API requires Authorization JWT token for all requests (except to retrieve the token), those requests are secured
 role-based and some of them are only allowed for admin users.
-  
+ 
+Documentation fo Api Endpoints use swagger UI:
+http://localhost:9200/swagger-ui/index.html 
+![img.png](img.png)
+ 
 ### Running complete stack (easy and fast)
 
 ###### Requirements
