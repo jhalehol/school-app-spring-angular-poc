@@ -36,3 +36,4 @@ api/key
 api/key_.pub
 api/.mvn/*
 api/mvnw.cmd
+/stack.build
